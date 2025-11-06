@@ -1,45 +1,98 @@
 import { useState } from 'react';
+import { createCategory  , getCategories , editCategory , deleteCategory } from '../../lib/api';
+
+
+
 
 function CategoriesAdmin() {
-  const [categories, setCategories] = useState([
-    { _id: 'cat1', name: 'Electronics', description: 'Devices and gadgets' },
-    { _id: 'cat2', name: 'Clothing', description: 'Apparel and accessories' },
-  ]);
-  const [form, setForm] = useState({ name: '', description: '' });
-  const [editingId, setEditingId] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.name) {
-      alert('Category name is required');
-      return;
-    }
+        const [categories, setCategories] = useState([]);
+        const [form, setForm] = useState({ name: '', description: '' });
+        const [editingId, setEditingId] = useState(null);
 
-    if (editingId) {
-      setCategories(categories.map((c) => (c._id === editingId ? { ...c, ...form } : c)));
-      alert('Category updated');
-    } else {
-      const newCategory = { _id: `cat${categories.length + 1}`, ...form };
-      setCategories([...categories, newCategory]);
-      alert('Category created');
-    }
-    setForm({ name: '', description: '' });
-    setEditingId(null);
-  };
+        // Fetch categories on component mount
+        useState(() => {
+            const fetchCategories = async () => {
+                const data = await getCategories();
+                setCategories(data);
+            };
+            fetchCategories();
+        }, []);
 
-  const handleEdit = (category) => {
-    setForm({
-      name: category.name,
-      description: category.description || '',
-    });
-    setEditingId(category._id);
-  };
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            if (!form.name) {
+                alert('Category name is required');
+                return;
+            }
+            
+            if (editingId) {
+                const updatedCategory = await editCategory(editingId, form);
+                setCategories(categories.map((c) => (c._id === editingId ? updatedCategory : c)));
+                alert('Category updated');
+            } else {
+                const newCategory = await createCategory(form);
+                setCategories([...categories, newCategory]);
+                alert('Category created');
+            }
+            setForm({ name: '', description: '' });
+            setEditingId(null);
+        };
 
-  const handleDelete = (id) => {
-    if (!window.confirm('Are you sure you want to delete this category?')) return;
-    setCategories(categories.filter((c) => c._id !== id));
-    alert('Category deleted');
-  };
+        const handleEdit = (category) => {
+            setForm({
+                name: category.name,
+                description: category.description || '',
+            });
+            setEditingId(category._id);
+        };
+        
+        const handleDelete = async (id) => {
+            if (!window.confirm('Are you sure you want to delete this category?')) return;
+            await deleteCategory(id);
+            setCategories(categories.filter((c) => c._id !== id));
+            alert('Category deleted');
+        };
+
+  // const [categories, setCategories] = useState([
+  //   { _id: 'cat1', name: 'Electronics', description: 'Devices and gadgets' },
+  //   { _id: 'cat2', name: 'Clothing', description: 'Apparel and accessories' },
+  // ]);
+  // const [form, setForm] = useState({ name: '', description: '' });
+  // const [editingId, setEditingId] = useState(null);
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (!form.name) {
+  //     alert('Category name is required');
+  //     return;
+  //   }
+
+  //   if (editingId) {
+  //     setCategories(categories.map((c) => (c._id === editingId ? { ...c, ...form } : c)));
+  //     alert('Category updated');
+  //   } else {
+  //     const newCategory = { _id: `cat${categories.length + 1}`, ...form };
+  //     setCategories([...categories, newCategory]);
+  //     alert('Category created');
+  //   }
+  //   setForm({ name: '', description: '' });
+  //   setEditingId(null);
+  // };
+
+  // const handleEdit = (category) => {
+  //   setForm({
+  //     name: category.name,
+  //     description: category.description || '',
+  //   });
+  //   setEditingId(category._id);
+  // };
+
+  // const handleDelete = (id) => {
+  //   if (!window.confirm('Are you sure you want to delete this category?')) return;
+  //   setCategories(categories.filter((c) => c._id !== id));
+  //   alert('Category deleted');
+  // };
 
   return (
     <div className="p-4">
