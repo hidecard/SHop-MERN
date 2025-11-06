@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createCategory  , getCategories , editCategory , deleteCategory } from '../../lib/api';
 
 
@@ -11,10 +11,15 @@ function CategoriesAdmin() {
         const [editingId, setEditingId] = useState(null);
 
         // Fetch categories on component mount
-        useState(() => {
+        useEffect(() => {
             const fetchCategories = async () => {
-                const data = await getCategories();
-                setCategories(data);
+                try {
+                    const data = await getCategories();
+                    setCategories(data);
+                } catch (error) {
+                    console.error('Failed to fetch categories:', error);
+                    setCategories([]);
+                }
             };
             fetchCategories();
         }, []);
