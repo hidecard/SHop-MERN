@@ -48,6 +48,9 @@ export const deleteAdminUser = async (id) => {
 // show categories
 export const getCategories = async () => {
     const response = await fetch(`${API_URL}/admin/categories`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch categories: ${response.status}`);
+    }
     return response.json();
 }
 
@@ -86,3 +89,49 @@ export const deleteCategory = async (id) => {
     return response.json();
 }
 
+//show product
+
+export const getProducts = async () => {
+  const response = await fetch(`${API_URL}/admin/products`);
+   if (!response.ok) {
+        throw new Error(`Failed to fetch categories: ${response.status}`);
+    }
+    return response.json();
+
+};
+
+//create product
+
+
+export const createProduct = async (productData) => {
+    const response = await fetch(`${API_URL}/admin/product`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+    });
+    return response.json();
+}
+
+// edit product
+
+export const editProduct = async (id, productData) => {
+  const response = await fetch(`${API_URL}/admin/products/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(productData),
+  });
+  return response.json();
+};
+
+
+
+// delete product
+
+export const deleteProduct = async (id) => {
+    const response = await fetch(`${API_URL}/admin/product/${id}`, {
+        method: 'DELETE',
+    });
+    return response.json();
+}

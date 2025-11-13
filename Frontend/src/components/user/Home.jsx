@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { mockProducts } from '../../lib/mockData';
 import { EyeIcon } from '@heroicons/react/24/outline';
+import { getProducts } from '../../lib/api';
 
 function StarRating({ rating, setRating, readOnly = false }) {
   const handleClick = (value) => {
